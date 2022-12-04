@@ -13,5 +13,11 @@ func main() {
 	flag.Parse()
 	config, _ := configuration.ExtractConfiguration(*configpath)
 	dbh, _ := dblayer.NewPersistanceLayer(config.Databasetype, config.DBConnection)
-	log.Fatal(rest.ServeApi(config.RestfulEndpoint, dbh))
+	httpErrChan, httpTlsErrChan := rest.ServeApi(config.RestfulEndpoint, config.TlsRestfulEndpoint, dbh)
+	select {
+	case err := <-httpErrChan:
+		log.Fatal("HTTP Error", err)
+	case err := <-httpTlsErrChan:
+		log.Fatal("HTTPS Error", err)
+	}
 }
