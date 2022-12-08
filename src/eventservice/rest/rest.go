@@ -2,6 +2,7 @@ package rest
 
 import (
 	"booking/src/lib/persistence"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,12 +12,19 @@ func ServeApi(ep, tlsEp string, dbHandle persistence.DatabaseHandler) (chan erro
 	httpTlsErrChan := make(chan error)
 	eh := NewEventHandler(dbHandle)
 	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
 	eventRouter := r.Group("/event")
 	eventRouter.GET("", eh.AllEventHandler)
 	eventRouter.POST("", eh.NewEventHandler)
 	eventRouter.GET("/:searchCriteria/:search", eh.FindEventHandler)
 	go func() {
-		httpTlsErrChan <- r.RunTLS(tlsEp, "../../lib/certs/cert.pem", "../../lib/certs/key.pem")
+		// Path to certs is relative to go.mod file
+		// This will also work ./src/lib/certs/cert.pem
+		httpTlsErrChan <- r.RunTLS(tlsEp, "src/lib/certs/cert.pem", "src/lib/certs/key.pem")
 	}()
 	go func() {
 		httpErrChan <- r.Run(ep)

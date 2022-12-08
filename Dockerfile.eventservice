@@ -1,0 +1,6 @@
+# FROM scratch
+FROM alpine
+WORKDIR /app
+COPY ./src/eventservice/eventservice eventservice
+COPY ./src/lib/certs/* src/lib/certs/
+CMD ["/app/eventservice"]

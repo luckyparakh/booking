@@ -2,9 +2,13 @@ package mongolayer
 
 import (
 	"booking/src/lib/persistence"
+	"context"
+	"fmt"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
@@ -13,52 +17,73 @@ const (
 	EVENTS = "events"
 )
 
+var ctx = context.TODO()
+
 type MongoDBLayer struct {
-	session *mgo.Session
+	client *mongo.Client
 }
 
 func NewMongoLayer(url string) (*MongoDBLayer, error) {
-	s, err := mgo.Dial(url)
+	clientOpts := options.Client().ApplyURI(url)
+	c, err := mongo.Connect(ctx, clientOpts)
 	if err != nil {
 		return nil, err
 	}
+	if err := c.Ping(ctx, nil); err != nil {
+		return nil, err
+	}
+
 	return &MongoDBLayer{
-		session: s,
+		client: c,
 	}, nil
 }
 
-func (m *MongoDBLayer) AddEvent(e persistence.Event) ([]byte, error) {
-	s := m.getFreshSession()
-	s.Close()
-	if !e.ID.Valid() {
-		e.ID = bson.NewObjectId()
+func (m *MongoDBLayer) AddEvent(e persistence.Event) (string, error) {
+	result, err := m.client.Database(DB).Collection(EVENTS).InsertOne(ctx, e)
+	if err != nil {
+		return "", err
 	}
-	if !e.Location.ID.Valid() {
-		e.Location.ID = bson.NewObjectId()
-	}
-	return []byte(e.ID), s.DB(DB).C(EVENTS).Insert(e)
+	return fmt.Sprintf("%v", result.InsertedID), nil
 }
-func (m *MongoDBLayer) FindEvent(id []byte) (persistence.Event, error) {
-	s := m.getFreshSession()
-	s.Close()
+
+func (m *MongoDBLayer) FindEvent(id string) (persistence.Event, error) {
 	e := persistence.Event{}
-	err := s.DB(DB).C(EVENTS).FindId(bson.ObjectId(id)).One(&e)
-	return e, err
+	eventId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return e, err
+	}
+	// https://stackoverflow.com/questions/64281675/bson-d-vs-bson-m-for-find-queries
+	filter := bson.M{"_id": eventId}
+	err = m.client.Database(DB).Collection(EVENTS).FindOne(ctx, filter).Decode(&e)
+	if err != nil {
+		return e, err
+	}
+	return e, nil
 }
 func (m *MongoDBLayer) FindEventByName(name string) (persistence.Event, error) {
-	s := m.getFreshSession()
-	s.Close()
 	e := persistence.Event{}
-	err := s.DB(DB).C(EVENTS).Find(bson.M{"name": name}).One(&e)
-	return e, err
+	filter := bson.M{"name": name}
+	err := m.client.Database(DB).Collection(EVENTS).FindOne(ctx, filter).Decode(&e)
+	if err != nil {
+		return e, err
+	}
+	return e, nil
 }
 func (m *MongoDBLayer) FindAllAvailableEvents() ([]persistence.Event, error) {
-	s := m.getFreshSession()
-	s.Close()
-	events := []persistence.Event{}
-	err := s.DB(DB).C(EVENTS).Find(nil).All(&events)
+	var event persistence.Event
+	var events []persistence.Event
+	cur, err := m.client.Database(DB).Collection(EVENTS).Find(ctx, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	for cur.Next(ctx) {
+		err := cur.Decode(&event)
+		if err != nil {
+			return nil, err
+		}
+		events = append(events, event)
+	}
 	return events, err
-}
-func (m *MongoDBLayer) getFreshSession() *mgo.Session {
-	return m.session.Copy()
 }

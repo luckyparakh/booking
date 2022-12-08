@@ -2,7 +2,6 @@ package rest
 
 import (
 	"booking/src/lib/persistence"
-	"encoding/hex"
 	"net/http"
 	"strings"
 
@@ -18,7 +17,6 @@ func NewEventHandler(dbLayer persistence.DatabaseHandler) *eventHandler {
 		dbLayer: dbLayer,
 	}
 }
-
 func (eh *eventHandler) AllEventHandler(c *gin.Context) {
 	events, err := eh.dbLayer.FindAllAvailableEvents()
 	if err != nil {
@@ -58,10 +56,11 @@ func (eh *eventHandler) FindEventHandler(c *gin.Context) {
 	case "name":
 		event, err = eh.dbLayer.FindEventByName(sk)
 	case "id":
-		id, er := hex.DecodeString(sk)
-		if er == nil {
-			event, err = eh.dbLayer.FindEvent(id)
-		}
+		event, err = eh.dbLayer.FindEvent(sk)
+		// id, er := hex.DecodeString(sk)
+		// if er == nil {
+		// 	event, err = eh.dbLayer.FindEvent(id)
+		// }
 	}
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})

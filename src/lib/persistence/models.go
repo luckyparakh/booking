@@ -1,9 +1,7 @@
 package persistence
 
-import "gopkg.in/mgo.v2/bson"
-
 type Event struct {
-	ID        bson.ObjectId `bson:"_id"`
+	// ID        string `bson:"_id,omitempty" json:"id,omitempty"` // Should not be taken as user input
 	Name      string
 	Duration  int
 	StartDate int64
@@ -12,7 +10,7 @@ type Event struct {
 }
 
 type Location struct {
-	ID        bson.ObjectId `bson:"_id"`
+	// ID        string `bson:"_id,omitempty" json:"id,omitempty"` //Should not be taken as user input
 	Name      string
 	Address   string
 	Country   string
