@@ -12,6 +12,8 @@ var (
 	DBConnectionDefault = "mongodb://eventsdb:27017" // Same as name of service in docker compose file
 	RestfulEPDefault    = ":8180"                    // localhost:8180 does not work with docker
 	RestfulTLSEPDefault = ":9191"
+	Qtype               = "rmq"
+	QEndpoint           = os.Getenv("AMQP_BROKER_URL")
 )
 
 type ServiceConfig struct {
@@ -19,6 +21,8 @@ type ServiceConfig struct {
 	DBConnection       string         `json:"dbconnection"`
 	RestfulEndpoint    string         `json:"restfulapi_endpoint"`
 	TlsRestfulEndpoint string         `json:"restfulapi_tlsendpoint"`
+	Qtype              string         `json:"q_type"`
+	QEndpoint          string         `json:"q_endpoint"`
 }
 
 func ExtractConfiguration(fp string) (*ServiceConfig, error) {
@@ -27,6 +31,8 @@ func ExtractConfiguration(fp string) (*ServiceConfig, error) {
 		DBConnectionDefault,
 		RestfulEPDefault,
 		RestfulTLSEPDefault,
+		Qtype,
+		QEndpoint,
 	}
 	configFile, err := os.Open(fp)
 	if err != nil {

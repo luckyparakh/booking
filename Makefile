@@ -7,7 +7,7 @@ up:
 ## down: stop docker compose
 down:
 	@echo "Stopping docker compose..."
-	sudo rm -rf db-data/mongo/
+	sudo rm -rf db-data/*
 	docker-compose down --remove-orphans
 	@echo "Done!"
 ## build_broker: builds the event binary as a linux executable

@@ -10,7 +10,7 @@ type Event struct {
 }
 
 type Location struct {
-	// ID        string `bson:"_id,omitempty" json:"id,omitempty"` //Should not be taken as user input
+	ID        string `bson:"_id,omitempty" json:"id,omitempty"` //Should not be taken as user input
 	Name      string
 	Address   string
 	Country   string

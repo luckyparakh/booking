@@ -8,7 +8,7 @@ services:
       - 5672:5672 # for sender and consumer connections
     volumes:
       - ./db-data/rabbitmq/data/:/var/lib/rabbitmq
-      - ./db-data/rabbitmq/log/:/var/log/rabbitmq
+    #   - ./db-data/rabbitmq/log/:/var/log/rabbitmq
   eventsdb:
     image: 'mongo:4.2.17-bionic'
     container_name: mongo

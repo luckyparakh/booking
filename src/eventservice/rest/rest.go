@@ -1,16 +1,17 @@
 package rest
 
 import (
+	"booking/src/lib/msgqueue"
 	"booking/src/lib/persistence"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func ServeApi(ep, tlsEp string, dbHandle persistence.DatabaseHandler) (chan error, chan error) {
+func ServeApi(ep, tlsEp string, dbHandle persistence.DatabaseHandler, qHandler msgqueue.EventEmitter) (chan error, chan error) {
 	httpErrChan := make(chan error)
 	httpTlsErrChan := make(chan error)
-	eh := NewEventHandler(dbHandle)
+	eh := NewEventHandler(dbHandle, qHandler)
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

@@ -1,20 +1,25 @@
 package rest
 
 import (
+	"booking/src/contracts"
+	"booking/src/lib/msgqueue"
 	"booking/src/lib/persistence"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type eventHandler struct {
-	dbLayer persistence.DatabaseHandler
+	dbLayer  persistence.DatabaseHandler
+	qHandler msgqueue.EventEmitter
 }
 
-func NewEventHandler(dbLayer persistence.DatabaseHandler) *eventHandler {
+func NewEventHandler(dbLayer persistence.DatabaseHandler, qh msgqueue.EventEmitter) *eventHandler {
 	return &eventHandler{
-		dbLayer: dbLayer,
+		dbLayer:  dbLayer,
+		qHandler: qh,
 	}
 }
 func (eh *eventHandler) AllEventHandler(c *gin.Context) {
@@ -37,6 +42,14 @@ func (eh *eventHandler) NewEventHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	msg := contracts.EventCreatedEvent{
+		ID:         id,
+		Name:       event.Name,
+		LocationID: event.Location.ID,
+		Start:      time.Unix(event.StartDate, 0),
+		End:        time.Unix(event.EndDate, 0),
+	}
+	eh.qHandler.Emit(&msg)
 	c.JSON(http.StatusOK, gin.H{"id": id})
 }
 func (eh *eventHandler) FindEventHandler(c *gin.Context) {
