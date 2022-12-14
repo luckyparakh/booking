@@ -1,7 +1,9 @@
 P1
 Add Viper
 Add logging
-Testing
+Testing (UT and IT using robo framework)
+Add MW for logging
+Add comments and api doc
 
 P2
 Use bson.D in mongolayer in place of bson.M

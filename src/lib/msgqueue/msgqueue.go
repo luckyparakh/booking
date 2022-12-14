@@ -13,4 +13,6 @@ type EventEmitter interface {
 }
 
 type EventListener interface {
+	// Listen to list of events and return 
+	Listen(eventNames ...string) (<-chan Event, <-chan error, error)
 }

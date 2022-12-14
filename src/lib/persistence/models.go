@@ -1,12 +1,13 @@
 package persistence
 
 type Event struct {
-	// ID        string `bson:"_id,omitempty" json:"id,omitempty"` // Should not be taken as user input
+	ID        string `bson:"_id,omitempty" json:"id,omitempty"` // Should not be taken as user input
 	Name      string
 	Duration  int
 	StartDate int64
 	EndDate   int64
 	Location  Location
+	Capacity int    `json:"capacity"`
 }
 
 type Location struct {
@@ -22,5 +23,5 @@ type Location struct {
 type Hall struct {
 	Name     string `json:"name"`
 	Location string `json:"location,omitempty"`
-	Capacity int    `json:"capacity"`
+	// Capacity int    `json:"capacity"`
 }

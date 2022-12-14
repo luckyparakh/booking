@@ -4,6 +4,7 @@ import (
 	"booking/src/contracts"
 	"booking/src/lib/msgqueue"
 	"booking/src/lib/persistence"
+	"booking/src/lib/persistence/mongolayer"
 	"net/http"
 	"strings"
 	"time"
@@ -37,7 +38,7 @@ func (eh *eventHandler) NewEventHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	id, err := eh.dbLayer.AddEvent(event)
+	id, err := eh.dbLayer.AddEvent(&event, mongolayer.EVENTS)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -48,6 +49,7 @@ func (eh *eventHandler) NewEventHandler(c *gin.Context) {
 		LocationID: event.Location.ID,
 		Start:      time.Unix(event.StartDate, 0),
 		End:        time.Unix(event.EndDate, 0),
+		Capacity:   event.Capacity,
 	}
 	eh.qHandler.Emit(&msg)
 	c.JSON(http.StatusOK, gin.H{"id": id})

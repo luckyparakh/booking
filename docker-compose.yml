@@ -6,8 +6,8 @@ services:
     ports:
       - 15672:15672 # for RabbitMQ GUI
       - 5672:5672 # for sender and consumer connections
-    volumes:
-      - ./db-data/rabbitmq/data/:/var/lib/rabbitmq
+    # volumes:
+    #   - ./db-data/rabbitmq/data/:/var/lib/rabbitmq
     #   - ./db-data/rabbitmq/log/:/var/log/rabbitmq
   eventsdb:
     image: 'mongo:4.2.17-bionic'
@@ -16,15 +16,15 @@ services:
       - 27017:27017
     environment:
       MONGO_INITDB_DATABASE: myevents
-    volumes:
-      - ./db-data/mongo/:/data/db
+    # volumes:
+    #   - ./db-data/mongo/:/data/db
   events:
     container_name: events
     build:
       context: .
       dockerfile: Dockerfile.eventservice
     ports:
-      - 8180:8180
+      - 8181:8181
       - 9191:9191
     depends_on:
       - rabbitmq
@@ -32,3 +32,15 @@ services:
     environment:
       - AMQP_BROKER_URL=amqp://guest:guest@rabbitmq:5672/
       - MONGO_URL=mongodb://events-db/events
+  booking:
+    container_name: booking
+    build:
+      context: .
+      dockerfile: Dockerfile.bookingservice
+    ports:
+      - 8182:8182
+    depends_on:
+      - rabbitmq
+      - eventsdb
+    environment:
+      - AMQP_BROKER_URL=amqp://guest:guest@rabbitmq:5672/

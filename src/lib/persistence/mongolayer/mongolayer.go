@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	DB     = "myevents"
-	USERS  = "users"
-	EVENTS = "events"
+	DB      = "myevents"
+	BOOKING = "booking"
+	EVENTS  = "events"
 )
 
 var ctx = context.TODO()
@@ -38,8 +38,8 @@ func NewMongoLayer(url string) (*MongoDBLayer, error) {
 	}, nil
 }
 
-func (m *MongoDBLayer) AddEvent(e persistence.Event) (string, error) {
-	result, err := m.client.Database(DB).Collection(EVENTS).InsertOne(ctx, e)
+func (m *MongoDBLayer) AddEvent(e *persistence.Event, collection string) (string, error) {
+	result, err := m.client.Database(DB).Collection(collection).InsertOne(ctx, e)
 	if err != nil {
 		return "", err
 	}

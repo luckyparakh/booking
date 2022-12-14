@@ -1,0 +1,6 @@
+# FROM scratch
+FROM alpine
+WORKDIR /app
+COPY ./src/bookingservice/bookingservice bookingservice
+COPY ./src/lib/certs/* src/lib/certs/
+CMD ["/app/bookingservice"]

@@ -3,6 +3,7 @@ module booking
 go 1.18
 
 require (
+	github.com/eapache/go-resiliency v1.3.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/streadway/amqp v1.0.0
 	go.mongodb.org/mongo-driver v1.11.0

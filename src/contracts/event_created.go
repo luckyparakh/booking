@@ -8,8 +8,10 @@ type EventCreatedEvent struct {
 	LocationID string    `json:"location_id"`
 	Start      time.Time `json:"start_date"`
 	End        time.Time `json:"end_date"`
+	Capacity   int       `json:"capacity"`
 }
 
+// Needed, in order to make 'EventCreatedEvent' implements Events interface
 func (c *EventCreatedEvent) EventName() string {
 	return "eventCreated"
 }

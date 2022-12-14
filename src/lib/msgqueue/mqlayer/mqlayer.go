@@ -12,3 +12,11 @@ func NewMqLayerEmitter(mqProvider, conn string) (msgqueue.EventEmitter, error) {
 	}
 	return nil, nil
 }
+
+func NewMqLayerListener(mqProvider, conn, q string) (msgqueue.EventListener, error) {
+	switch mqProvider {
+	case "rmq":
+		return ampq.NewAmqpEventListener(conn, q)
+	}
+	return nil, nil
+}
