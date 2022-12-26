@@ -17,7 +17,7 @@ func main() {
 	flag.Parse()
 
 	config, _ := configuration.ExtractConfiguration(*configpath)
-	qh, err := mqlayer.NewMqLayerListener(config.Qtype, config.QEndpoint, config.QName)
+	qh, err := mqlayer.NewMqLayerListener(config.Qtype, config.QEndpoint)
 	if err != nil {
 		log.Fatal("Error while connecting MQ layer", err)
 	}

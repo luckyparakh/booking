@@ -13,9 +13,11 @@ var (
 	RestfulEPDefault    = ":8181"                    // localhost:8181 does not work with docker
 	RestfulTLSEPDefault = ":9191"
 	RestfulEPDefaultBk  = ":8182" // localhost:8181 does not work with docker
-	Qtype               = "rmq"
-	QEndpoint           = os.Getenv("AMQP_BROKER_URL")
-	QName               = "event"
+	// Qtype               = "rmq"
+	// QEndpoint           = os.Getenv("AMQP_BROKER_URL")
+	Qtype               = "kafka"
+	QEndpoint           = os.Getenv("KAFKA_URL")
+	// QName               = "event"
 )
 
 type ServiceConfig struct {
@@ -26,7 +28,7 @@ type ServiceConfig struct {
 	RestfulEndpointBk  string         `json:"restfulapi_endpoint_bk"`
 	Qtype              string         `json:"q_type"`
 	QEndpoint          string         `json:"q_endpoint"`
-	QName              string         `json:"q_name"`
+	// QName              string         `json:"q_name"`
 }
 
 func ExtractConfiguration(fp string) (*ServiceConfig, error) {
@@ -38,7 +40,7 @@ func ExtractConfiguration(fp string) (*ServiceConfig, error) {
 		RestfulEPDefaultBk,
 		Qtype,
 		QEndpoint,
-		QName,
+		// QName,
 	}
 	configFile, err := os.Open(fp)
 	if err != nil {

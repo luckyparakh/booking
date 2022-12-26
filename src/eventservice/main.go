@@ -16,6 +16,7 @@ func main() {
 	flag.Parse()
 
 	config, _ := configuration.ExtractConfiguration(*configpath)
+	// log.Printf("config:%v %v\n", config.Qtype, config.QEndpoint)
 	qh, err := mqlayer.NewMqLayerEmitter(config.Qtype, config.QEndpoint)
 	if err != nil {
 		log.Fatal("Error while connecting MQ layer", err)

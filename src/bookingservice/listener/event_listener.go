@@ -27,13 +27,13 @@ func (e *EventListener) ProcessEvent() error {
 	log.Println("Processing Events")
 	rCh, eCh, err := e.qConn.Listen("eventCreated")
 	if err != nil {
-		log.Printf("Error while listen messages: %v", err)
+		log.Printf("Error while listen messages: %v\n", err)
 		return err
 	}
 	for {
 		select {
 		case <-eCh:
-			log.Print("Error recevied while listening to messages")
+			log.Printf("Error recevied while listening to messages:%v\n", err)
 			return err
 		case event := <-rCh:
 			log.Printf("event %v", event)

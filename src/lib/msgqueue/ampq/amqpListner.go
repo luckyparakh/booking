@@ -18,7 +18,9 @@ type amqpEventListener struct {
 	queue      string
 }
 
-func NewAmqpEventListener(conn string, q string) (msgqueue.EventListener, error) {
+const q = "event"
+
+func NewAmqpEventListener(conn string) (msgqueue.EventListener, error) {
 	r := lib.Retry(connectAmqp, 5, 1)
 	amqpConn, err := r(conn)
 	if err != nil {
@@ -62,7 +64,7 @@ func (a *amqpEventListener) Listen(eventNames ...string) (<-chan msgqueue.Event,
 		})
 		if retryErr != nil {
 			log.Printf("Error while binding: %v\n", retryErr)
-			return nil, nil, err
+			return nil, nil, retryErr
 		}
 		// if err := channel.QueueBind(a.queue, event, "events", false, nil); err != nil {
 		// 	log.Printf("Error while consuming data from channel: %v\n", err)

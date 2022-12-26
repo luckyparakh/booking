@@ -8,7 +8,7 @@ up:
 ## down: stop docker compose
 down:
 	@echo "Stopping docker compose..."
-	sudo rm -rf db-data/*
+	# sudo rm -rf db-data/*
 	docker-compose down --remove-orphans
 	@echo "Done!"
 ## build_event: builds the event binary as a linux executable
